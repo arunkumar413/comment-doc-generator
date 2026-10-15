@@ -1,9 +1,9 @@
 {
-  "name": "swift-doc-generator",
-  "displayName": "Swift Markdown Documentation Generator",
-  "description": "Generate Markdown documentation from Swift multiline comments.",
-  "version": "0.1.0",
-  "publisher": "swift-doc-generator",
+  "name": "comment-doc-generator",
+  "displayName": "Comment Markdown Documentation Generator",
+  "description": "Generate Markdown documentation from multiline comments in source files.",
+  "version": "0.2.0",
+  "publisher": "comment-doc-generator",
   "license": "MIT",
   "engines": {
     "vscode": "^1.90.0",
@@ -13,7 +13,8 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:swiftDoc.generateMarkdown"
+    "onCommand:commentDoc.generateMarkdown",
+    "onCommand:commentDoc.generateMarkdownFromContext"
   ],
   "main": "./dist/extension.js",
   "scripts": {
@@ -30,65 +31,65 @@
   "contributes": {
     "commands": [
       {
-        "command": "swiftDoc.generateMarkdown",
+        "command": "commentDoc.generateMarkdown",
         "title": "Generate Markdown",
-        "category": "Swift Docs"
+        "category": "Comment Docs"
       },
       {
-        "command": "swiftDoc.generateMarkdownFromContext",
+        "command": "commentDoc.generateMarkdownFromContext",
         "title": "Generate Markdown Documentation",
-        "category": "Swift Docs"
+        "category": "Comment Docs"
       }
     ],
     "menus": {
       "commandPalette": [
         {
-          "command": "swiftDoc.generateMarkdownFromContext",
+          "command": "commentDoc.generateMarkdownFromContext",
           "when": "false"
         }
       ],
       "explorer/context": [
         {
-          "command": "swiftDoc.generateMarkdownFromContext",
-          "when": "resourceExtname == .swift",
+          "command": "commentDoc.generateMarkdownFromContext",
+          "when": "resourceExtname != .md && !explorerResourceIsFolder",
           "group": "navigation"
         }
       ],
       "editor/context": [
         {
-          "command": "swiftDoc.generateMarkdownFromContext",
-          "when": "editorLangId == swift",
+          "command": "commentDoc.generateMarkdownFromContext",
+          "when": "editorLangId != markdown",
           "group": "navigation"
         }
       ]
     },
     "configuration": {
-      "title": "Swift Docs",
+      "title": "Comment Docs",
       "properties": {
-        "swiftDoc.outputFolder": {
+        "commentDoc.outputFolder": {
           "type": "string",
           "default": "",
-          "description": "Optional output folder for generated Markdown. Leave empty to write next to the Swift source file."
+          "description": "Optional output folder for generated Markdown. Leave empty to write next to the source file."
         },
-        "swiftDoc.overwrite": {
+        "commentDoc.overwrite": {
           "type": "boolean",
           "default": false,
           "description": "Overwrite existing Markdown files without asking for confirmation."
         },
-        "swiftDoc.openAfterGenerate": {
+        "commentDoc.openAfterGenerate": {
           "type": "boolean",
           "default": true,
           "description": "Open the generated Markdown file after generation."
         },
-        "swiftDoc.includeImports": {
+        "commentDoc.includeImports": {
           "type": "boolean",
           "default": true,
-          "description": "Include Swift import statements in generated code fences."
+          "description": "Include import statements in generated code fences when the language supports them."
         },
-        "swiftDoc.codeFenceLanguage": {
+        "commentDoc.codeFenceLanguage": {
           "type": "string",
-          "default": "swift",
-          "description": "Language identifier used for generated Markdown code fences."
+          "default": "",
+          "description": "Language identifier for Markdown code fences. Leave empty to infer it from the source file."
         }
       }
     }

@@ -7,7 +7,7 @@ export interface MarkdownWriterOptions {
 
 export class MarkdownWriter {
   public write(document: Document, options: MarkdownWriterOptions = {}): string {
-    const language = options.codeFenceLanguage ?? "swift";
+    const language = options.codeFenceLanguage ?? "text";
 
     return document.sections
       .map((section) => renderSection(section, language))

@@ -1,9 +1,10 @@
 import * as path from "node:path";
 import * as vscode from "vscode";
+import { isMarkdownPath } from "../parser/languages";
 
 export class FileUtil {
-  public isSwiftFile(uri: vscode.Uri): boolean {
-    return path.extname(uri.fsPath).toLowerCase() === ".swift";
+  public isSupportedSourceFile(uri: vscode.Uri): boolean {
+    return !isMarkdownPath(uri.fsPath);
   }
 
   public getMarkdownUri(sourceUri: vscode.Uri, outputFolder: string): vscode.Uri {

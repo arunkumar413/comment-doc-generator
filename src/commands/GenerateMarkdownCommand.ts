@@ -2,12 +2,10 @@ import * as path from "node:path";
 import * as vscode from "vscode";
 import type { FileUtil } from "../util/FileUtil";
 import type { MarkdownWriter } from "../parser/MarkdownWriter";
-import {
-  type SwiftDocumentationParser,
-  SwiftDocumentationParserError
-} from "../parser/SwiftDocumentationParser";
+import { type DocumentationParser, DocumentationParserError } from "../parser/DocumentationParser";
+import { getLanguageProfile } from "../parser/languages";
 
-interface SwiftDocConfiguration {
+interface CommentDocConfiguration {
   outputFolder: string;
   overwrite: boolean;
   openAfterGenerate: boolean;
@@ -17,7 +15,7 @@ interface SwiftDocConfiguration {
 
 export class GenerateMarkdownCommand {
   public constructor(
-    private readonly parser: SwiftDocumentationParser,
+    private readonly parser: DocumentationParser,
     private readonly writer: MarkdownWriter,
     private readonly fileUtil: FileUtil
   ) {}
@@ -25,12 +23,15 @@ export class GenerateMarkdownCommand {
   public async execute(selectedUri?: vscode.Uri): Promise<void> {
     const sourceUri = selectedUri ?? vscode.window.activeTextEditor?.document.uri;
 
-    if (sourceUri === undefined || !this.fileUtil.isSwiftFile(sourceUri)) {
-      await vscode.window.showErrorMessage("Select a Swift source file before generating docs.");
+    if (sourceUri === undefined || !this.fileUtil.isSupportedSourceFile(sourceUri)) {
+      await vscode.window.showErrorMessage(
+        "Select a source file (not Markdown) before generating docs."
+      );
       return;
     }
 
     const configuration = this.getConfiguration(sourceUri);
+    const profile = getLanguageProfile(sourceUri.fsPath);
     const outputUri = this.fileUtil.getMarkdownUri(
       sourceUri,
       this.resolveOutputFolder(sourceUri, configuration.outputFolder)
@@ -45,17 +46,21 @@ export class GenerateMarkdownCommand {
       }
 
       const source = await this.fileUtil.readText(sourceUri);
-      const document = this.parser.parse(source, { includeImports: configuration.includeImports });
+      const document = this.parser.parse(source, {
+        includeImports: configuration.includeImports,
+        profile
+      });
 
       if (document.sections.length === 0) {
-        await vscode.window.showWarningMessage(
-          "No Swift multiline documentation blocks were found."
-        );
+        await vscode.window.showWarningMessage("No multiline documentation blocks were found.");
         return;
       }
 
       const markdown = this.writer.write(document, {
-        codeFenceLanguage: configuration.codeFenceLanguage
+        codeFenceLanguage:
+          configuration.codeFenceLanguage.trim().length > 0
+            ? configuration.codeFenceLanguage
+            : profile.fenceLanguage
       });
 
       await this.fileUtil.writeText(outputUri, markdown);
@@ -70,15 +75,15 @@ export class GenerateMarkdownCommand {
     }
   }
 
-  private getConfiguration(sourceUri: vscode.Uri): SwiftDocConfiguration {
-    const configuration = vscode.workspace.getConfiguration("swiftDoc", sourceUri);
+  private getConfiguration(sourceUri: vscode.Uri): CommentDocConfiguration {
+    const configuration = vscode.workspace.getConfiguration("commentDoc", sourceUri);
 
     return {
       outputFolder: configuration.get("outputFolder", ""),
       overwrite: configuration.get("overwrite", false),
       openAfterGenerate: configuration.get("openAfterGenerate", true),
       includeImports: configuration.get("includeImports", true),
-      codeFenceLanguage: configuration.get("codeFenceLanguage", "swift")
+      codeFenceLanguage: configuration.get("codeFenceLanguage", "")
     };
   }
 
@@ -95,7 +100,7 @@ export class GenerateMarkdownCommand {
 
   private async canOverwrite(
     outputUri: vscode.Uri,
-    configuration: SwiftDocConfiguration
+    configuration: CommentDocConfiguration
   ): Promise<boolean> {
     if (configuration.overwrite) {
       return true;
@@ -111,14 +116,14 @@ export class GenerateMarkdownCommand {
   }
 
   private formatError(error: unknown): string {
-    if (error instanceof SwiftDocumentationParserError) {
-      return `Swift documentation parser error: ${error.message}`;
+    if (error instanceof DocumentationParserError) {
+      return `Documentation parser error: ${error.message}`;
     }
 
     if (error instanceof Error) {
-      return `Failed to generate Swift documentation: ${error.message}`;
+      return `Failed to generate documentation: ${error.message}`;
     }
 
-    return "Failed to generate Swift documentation.";
+    return "Failed to generate documentation.";
   }
 }
