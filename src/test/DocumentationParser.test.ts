@@ -333,6 +333,8 @@ describe("language profiles", () => {
     expect(getLanguageProfile("a.ts").fenceLanguage).toBe("typescript");
     expect(getLanguageProfile("a.swift").fenceLanguage).toBe("swift");
     expect(getLanguageProfile("a.py").fenceLanguage).toBe("python");
+    expect(getLanguageProfile("main.v").fenceLanguage).toBe("v");
+    expect(getLanguageProfile("script.vsh").fenceLanguage).toBe("v");
   });
 
   it("falls back to C-style comments for unknown extensions", () => {

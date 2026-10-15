@@ -166,12 +166,14 @@ const PROFILES_BY_EXTENSION: Record<string, LanguageProfile> = {
   ".swift": SWIFT_PROFILE,
   ".ts": TYPESCRIPT_PROFILE,
   ".tsx": { ...TYPESCRIPT_PROFILE, fenceLanguage: "tsx" },
+  ".v": { ...C_FAMILY_PROFILE, fenceLanguage: "v", isImportLine: isImportStatement },
   ".vue": {
     ...HTML_PROFILE,
     fenceLanguage: "vue",
     blockComments: [...HTML_PROFILE.blockComments, ...C_FAMILY_PROFILE.blockComments],
     lineComments: ["//"]
   },
+  ".vsh": { ...C_FAMILY_PROFILE, fenceLanguage: "v", isImportLine: isImportStatement },
   ".xml": { ...HTML_PROFILE, fenceLanguage: "xml" }
 };
 

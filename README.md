@@ -19,15 +19,15 @@ Put Markdown content in a multiline comment, right-click in the file editor, and
 
 The extension scans the source character by character and treats every multiline comment block as Markdown. Comment syntax depends on the file type:
 
-| Languages                                                                                     | Multiline comment              |
-| --------------------------------------------------------------------------------------------- | ------------------------------ |
-| Swift, JavaScript, TypeScript, Java, Kotlin, Go, Rust, C, C++, C#, CSS, PHP, SQL, and similar | `/* ... */`                    |
-| Python                                                                                        | `""" ... """` or `''' ... '''` |
-| HTML, XML                                                                                     | `<!-- ... -->`                 |
-| Ruby                                                                                          | `=begin ... =end`              |
-| Lua                                                                                           | `--[[ ... ]]`                  |
-| Haskell                                                                                       | `{- ... -}`                    |
-| OCaml                                                                                         | `(* ... *)`                    |
+| Languages                                                                                        | Multiline comment              |
+| ------------------------------------------------------------------------------------------------ | ------------------------------ |
+| Swift, JavaScript, TypeScript, Java, Kotlin, Go, Rust, C, C++, C#, CSS, PHP, SQL, V, and similar | `/* ... */`                    |
+| Python                                                                                           | `""" ... """` or `''' ... '''` |
+| HTML, XML                                                                                        | `<!-- ... -->`                 |
+| Ruby                                                                                             | `=begin ... =end`              |
+| Lua                                                                                              | `--[[ ... ]]`                  |
+| Haskell                                                                                          | `{- ... -}`                    |
+| OCaml                                                                                            | `(* ... *)`                    |
 
 Unknown extensions use `/* ... */`.
 
